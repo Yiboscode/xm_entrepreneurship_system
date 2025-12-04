@@ -1,0 +1,232 @@
+创新创业选题系统 - 服务器部署步骤
+=======================================
+
+服务器信息：
+- 主机：collegetopics.cn
+- 用户：ubuntu
+- 目录：~/xm_entrepreneurship_system
+
+当前状态：
+- 已有旧版本容器运行
+- 需要全部清理后重新部署
+
+=======================================
+第一阶段：清理旧环境并部署数据库
+=======================================
+
+1. 连接服务器
+   方式1：使用终端
+   ssh ubuntu@collegetopics.cn
+   
+   方式2：使用SFTP工具（推荐）
+   - 使用FileZilla、WinSCP等工具
+   - 主机：collegetopics.cn
+   - 用户：ubuntu
+   - 密码：5201314_Zq
+
+2. 清理旧容器（在服务器上执行）
+   cd ~/xm_entrepreneurship_system
+   
+   # 停止容器
+   docker stop entrepreneurship_frontend entrepreneurship_backend entrepreneurship_mysql
+   
+   # 删除容器
+   docker rm entrepreneurship_frontend entrepreneurship_backend entrepreneurship_mysql
+   
+   # 删除旧镜像
+   docker rmi collegetopics-frontend collegetopics-backend
+   
+   # 清理资源
+   docker system prune -f
+   
+   # 确认清理完成
+   docker ps -a
+
+3. 上传部署文件到服务器
+   需要上传的文件：
+   - deploy/docker-compose.yml → ~/xm_entrepreneurship_system/docker-compose.yml
+   - deploy/quick-deploy.sh → ~/xm_entrepreneurship_system/quick-deploy.sh
+   - entrepreneurship_system.sql → ~/xm_entrepreneurship_system/init.sql
+
+4. 部署MySQL数据库（在服务器上执行）
+   cd ~/xm_entrepreneurship_system
+   
+   # 设置脚本执行权限
+   chmod +x quick-deploy.sh
+   
+   # 执行快速部署脚本
+   ./quick-deploy.sh
+   
+   或者手动执行：
+   docker-compose up -d mysql
+   
+   # 等待约20秒后检查
+   docker ps
+   
+   # 查看MySQL日志
+   docker-compose logs mysql
+
+5. 验证数据库（在服务器上执行）
+   # 连接数据库
+   docker exec -it entrepreneurship_mysql mysql -uroot -proot123456
+   
+   # 在MySQL中执行
+   USE entrepreneurship_system;
+   SHOW TABLES;
+   SELECT * FROM admin;
+   EXIT;
+
+=======================================
+第二阶段：修改本地配置并测试
+=======================================
+
+6. 修改后端配置
+   编辑：springboot/src/main/resources/application.yml
+   
+   修改内容：
+   spring:
+     datasource:
+       password: root123456
+       url: jdbc:mysql://collegetopics.cn:3306/entrepreneurship_system?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2b8&allowPublicKeyRetrieval=true
+   
+   fileBaseUrl: https://collegetopics.cn:9090
+
+7. 创建前端环境配置
+   复制文件：
+   vue/.env.development.example → vue/.env.development
+   vue/.env.production.example → vue/.env.production
+   
+   内容：
+   # .env.development
+   VITE_BASE_URL=http://localhost:9090
+   
+   # .env.production
+   VITE_BASE_URL=https://collegetopics.cn:9090
+
+8. 本地测试（在本地执行）
+   
+   启动后端：
+   cd springboot
+   mvn clean package
+   java -jar target/springboot-0.0.1-SNAPSHOT.jar
+   
+   启动前端（另开一个终端）：
+   cd vue
+   npm install
+   npm run dev
+   
+   访问：http://localhost:5173
+   
+   测试项：
+   ✓ 管理员登录（admin/admin）
+   ✓ 用户注册和登录
+   ✓ 教师注册和认证
+   ✓ 选题提交
+   ✓ 项目管理
+   ✓ 文件上传
+   ✓ 所有增删改查功能
+
+=======================================
+第三阶段：部署应用到服务器（测试通过后）
+=======================================
+
+9. 打包应用（在本地执行）
+   
+   打包后端：
+   cd springboot
+   mvn clean package -DskipTests
+   
+   打包前端：
+   cd vue
+   npm run build
+
+10. 上传应用到服务器
+    使用SFTP工具上传：
+    - springboot/ 整个目录 → ~/xm_entrepreneurship_system/springboot/
+    - vue/ 整个目录 → ~/xm_entrepreneurship_system/vue/
+
+11. 修改docker-compose.yml（在服务器上执行）
+    cd ~/xm_entrepreneurship_system
+    nano docker-compose.yml
+    
+    取消backend和frontend部分的注释（删除前面的#）
+
+12. 启动完整应用（在服务器上执行）
+    docker-compose build
+    docker-compose up -d
+    
+    查看状态：
+    docker-compose ps
+    
+    查看日志：
+    docker-compose logs -f
+
+13. 访问测试
+    前端：http://collegetopics.cn:8080
+    后端：http://collegetopics.cn:9090
+
+=======================================
+常用命令
+=======================================
+
+查看容器状态：
+docker-compose ps
+
+查看日志：
+docker-compose logs -f [service_name]
+
+重启服务：
+docker-compose restart [service_name]
+
+停止所有服务：
+docker-compose down
+
+重新启动：
+docker-compose up -d
+
+进入容器：
+docker exec -it [container_name] /bin/bash
+
+备份数据库：
+docker exec entrepreneurship_mysql mysqldump -uroot -proot123456 entrepreneurship_system > backup.sql
+
+=======================================
+故障排查
+=======================================
+
+1. 端口被占用
+   查看端口：netstat -tulpn | grep [port]
+   停止占用端口的进程
+
+2. 数据库连接失败
+   检查MySQL是否启动：docker ps
+   查看MySQL日志：docker-compose logs mysql
+   测试连接：docker exec -it entrepreneurship_mysql mysql -uroot -proot123456
+
+3. 后端启动失败
+   查看日志：docker-compose logs backend
+   检查配置文件是否正确
+   检查jar包是否存在
+
+4. 前端访问失败
+   查看nginx日志：docker-compose logs frontend
+   检查nginx配置
+   检查dist目录是否存在
+
+=======================================
+安全提醒
+=======================================
+
+⚠️ 重要：部署前必须修改：
+1. MySQL密码（docker-compose.yml中的MYSQL_ROOT_PASSWORD）
+2. 应用配置中的数据库密码
+3. 实施密码加密（参考代码审查报告）
+
+⚠️ 建议：
+1. 配置防火墙
+2. 启用HTTPS
+3. 定期备份数据库
+4. 限制数据库外网访问
+
+=======================================
+
