@@ -20,4 +20,4 @@ mybatis:
     map-underscore-to-camel-case: true
   mapper-locations: classpath:mapper/*.xml
 
-fileBaseUrl: http://119.29.152.18:${server.port}
+fileBaseUrl: http://119.29.152.18
