@@ -110,11 +110,13 @@ echo ""
 echo -e "${MAGENTA}[4/8] 部署MySQL数据库...${NC}"
 
 # 检查init.sql是否存在
-if [ ! -f "init.sql" ]; then
-    echo -e "${YELLOW}⚠ 警告：init.sql文件不存在！${NC}"
-    echo "请手动上传 entrepreneurship_system.sql 到 $PROJECT_DIR/init.sql"
-    read -p "已上传？按回车继续..."
+if [ ! -f "$PROJECT_DIR/init.sql" ]; then
+    echo -e "${RED}✗ 错误：init.sql文件不存在！${NC}"
+    echo "项目中应该包含 init.sql 数据库初始化文件"
+    echo "请检查GitHub仓库中是否有此文件"
+    exit 1
 fi
+echo "找到数据库初始化文件: init.sql"
 
 # 创建数据卷
 docker volume create mysql_data

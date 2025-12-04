@@ -25,7 +25,8 @@
 1. 将脚本上传到服务器 /home/ubuntu/ 目录
    本地执行：
    scp 完整部署脚本.sh ubuntu@119.29.152.18:/home/ubuntu/
-   scp entrepreneurship_system.sql ubuntu@119.29.152.18:/home/ubuntu/
+   
+   注意：不需要单独上传SQL文件！数据库初始化文件(init.sql)已包含在项目中
 
 2. 连接服务器
    ssh ubuntu@119.29.152.18
@@ -38,6 +39,10 @@
    注意：脚本会提示确认，输入 yes 继续
 
 4. 等待部署完成（约10-15分钟）
+   脚本会自动：
+   - 从GitHub克隆代码（包含init.sql）
+   - 初始化MySQL数据库
+   - 打包并部署后端和前端
 
 5. 访问测试
    http://119.29.152.18
@@ -120,7 +125,8 @@ A: 使用淘宝镜像：
 ├── 完整部署脚本.sh        # 完整部署脚本
 ├── 快速部署.sh            # 快速更新脚本
 └── xm_entrepreneurship_system/
-    ├── init.sql           # 数据库初始化文件
+    ├── init.sql           # 数据库初始化文件（已在GitHub中）
+    ├── entrepreneurship_system.sql  # 数据库初始化文件（原始名称）
     ├── files/             # 文件上传目录
     ├── springboot/        # 后端代码
     ├── vue/               # 前端代码
