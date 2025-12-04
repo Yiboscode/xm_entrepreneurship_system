@@ -1,0 +1,215 @@
+==========================================
+创新创业选题系统 - 部署说明
+==========================================
+
+【脚本说明】
+
+1. 完整部署脚本.sh
+   - 删除所有旧数据（包括数据库）
+   - 从头克隆项目
+   - 完整部署所有服务
+   - 适合：首次部署或完全重置
+
+2. 快速部署.sh
+   - 保留数据库数据
+   - 只更新代码
+   - 重新部署后端和前端
+   - 适合：日常更新
+
+==========================================
+【使用方法】
+==========================================
+
+== 首次部署 ==
+
+1. 将脚本上传到服务器 /home/ubuntu/ 目录
+   本地执行：
+   scp 完整部署脚本.sh ubuntu@119.29.152.18:/home/ubuntu/
+   scp entrepreneurship_system.sql ubuntu@119.29.152.18:/home/ubuntu/
+
+2. 连接服务器
+   ssh ubuntu@119.29.152.18
+
+3. 执行部署
+   cd /home/ubuntu
+   chmod +x 完整部署脚本.sh
+   ./完整部署脚本.sh
+
+   注意：脚本会提示确认，输入 yes 继续
+
+4. 等待部署完成（约10-15分钟）
+
+5. 访问测试
+   http://119.29.152.18
+   账号：admin
+   密码：admin
+
+== 日常更新 ==
+
+1. 本地修改代码并推送
+   git add .
+   git commit -m "更新内容"
+   git push
+
+2. 连接服务器
+   ssh ubuntu@119.29.152.18
+
+3. 快速部署
+   cd /home/ubuntu
+   ./快速部署.sh
+
+4. 访问测试
+
+==========================================
+【脚本执行流程】
+==========================================
+
+完整部署脚本.sh：
+  [1/8] 清理Docker容器和镜像
+  [2/8] 删除旧项目目录
+  [3/8] 从GitHub克隆代码
+  [4/8] 部署MySQL数据库
+  [5/8] 打包后端（Maven）
+  [6/8] 打包前端（npm）
+  [7/8] 构建并启动后端
+  [8/8] 构建并启动前端
+
+快速部署.sh：
+  [1/6] 拉取最新代码
+  [2/6] 停止旧容器
+  [3/6] 打包后端
+  [4/6] 打包前端
+  [5/6] 启动后端
+  [6/6] 启动前端
+
+==========================================
+【常见问题】
+==========================================
+
+Q1: 部署失败怎么办？
+A: 查看详细日志：
+   docker logs entrepreneurship_backend
+   docker logs entrepreneurship_frontend
+   docker logs entrepreneurship_mysql
+
+Q2: 如何备份数据？
+A: 执行完整部署前备份：
+   docker exec entrepreneurship_mysql mysqldump -uroot -proot123456 entrepreneurship_system > backup.sql
+
+Q3: 如何恢复数据？
+A: 导入备份：
+   docker exec -i entrepreneurship_mysql mysql -uroot -proot123456 entrepreneurship_system < backup.sql
+
+Q4: 端口被占用怎么办？
+A: 停止占用端口的进程：
+   sudo fuser -k 80/tcp
+   sudo fuser -k 9090/tcp
+
+Q5: Maven下载慢怎么办？
+A: 配置国内镜像源（已在pom.xml配置）
+
+Q6: npm安装慢怎么办？
+A: 使用淘宝镜像：
+   npm config set registry https://registry.npmmirror.com
+
+==========================================
+【目录结构】
+==========================================
+
+/home/ubuntu/
+├── 完整部署脚本.sh        # 完整部署脚本
+├── 快速部署.sh            # 快速更新脚本
+└── xm_entrepreneurship_system/
+    ├── init.sql           # 数据库初始化文件
+    ├── files/             # 文件上传目录
+    ├── springboot/        # 后端代码
+    ├── vue/               # 前端代码
+    ├── deploy.sh          # 项目内部署脚本
+    └── update.sh          # 项目内更新脚本
+
+==========================================
+【容器说明】
+==========================================
+
+entrepreneurship_mysql
+  - 端口：3306
+  - 数据卷：mysql_data
+  - 数据库：entrepreneurship_system
+  - 账号：root / root123456
+
+entrepreneurship_backend
+  - 端口：9090（应用），5005（调试）
+  - 文件目录：/app/files
+  - 连接：entrepreneurship_mysql
+
+entrepreneurship_frontend
+  - 端口：80
+  - 连接：entrepreneurship_backend
+  - Nginx服务器
+
+==========================================
+【管理命令】
+==========================================
+
+# 查看容器
+docker ps
+
+# 查看日志
+docker logs -f entrepreneurship_backend
+docker logs -f entrepreneurship_frontend
+
+# 重启容器
+docker restart entrepreneurship_backend
+docker restart entrepreneurship_frontend
+
+# 停止容器
+docker stop entrepreneurship_backend
+docker stop entrepreneurship_frontend
+
+# 删除容器
+docker rm -f entrepreneurship_backend
+docker rm -f entrepreneurship_frontend
+
+# 查看资源使用
+docker stats --no-stream
+
+# 连接数据库
+docker exec -it entrepreneurship_mysql mysql -uroot -proot123456
+
+# 备份数据库
+docker exec entrepreneurship_mysql mysqldump -uroot -proot123456 entrepreneurship_system > backup-$(date +%Y%m%d).sql
+
+==========================================
+【故障排查】
+==========================================
+
+1. 后端启动失败
+   原因：数据库连接失败、配置错误、端口占用
+   解决：查看日志 docker logs entrepreneurship_backend
+
+2. 前端无法访问
+   原因：容器未启动、Nginx配置错误
+   解决：docker logs entrepreneurship_frontend
+
+3. 数据库连接失败
+   原因：MySQL未启动、密码错误
+   解决：docker ps | grep mysql
+
+4. Maven打包失败
+   原因：网络问题、依赖下载失败
+   解决：检查网络，重试或使用国内镜像
+
+5. npm安装失败
+   原因：网络问题、磁盘空间不足
+   解决：npm config set registry https://registry.npmmirror.com
+
+==========================================
+【联系方式】
+==========================================
+
+GitHub: https://github.com/Yiboscode/xm_entrepreneurship_system
+
+如有问题，请提交Issue或联系作者。
+
+==========================================
+
