@@ -287,3 +287,4 @@ docker-compose up -d
 4. 启用HTTPS
 5. 实施密码加密（参考代码审查报告）
 
+测试自动部署 - Fri Dec  5 01:13:14 AM CST 2025
