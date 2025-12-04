@@ -180,6 +180,14 @@ echo -e "${MAGENTA}[6/8] 打包前端（npm）...${NC}"
 
 cd $PROJECT_DIR/vue
 
+# 创建生产环境配置文件
+echo "创建.env.production配置..."
+cat > .env.production << EOF
+# 生产环境配置
+# 使用相对路径，通过Nginx代理转发到后端
+VITE_BASE_URL=/api
+EOF
+
 # 安装依赖
 echo "安装前端依赖..."
 npm install

@@ -44,6 +44,14 @@ echo ""
 # 4. 打包前端
 echo -e "${MAGENTA}[4/6] 打包前端...${NC}"
 cd $PROJECT_DIR/vue
+
+# 创建生产环境配置文件
+cat > .env.production << EOF
+# 生产环境配置
+# 使用相对路径，通过Nginx代理转发到后端
+VITE_BASE_URL=/api
+EOF
+
 npm run build
 echo -e "${GREEN}✓ 前端打包成功${NC}"
 echo ""
