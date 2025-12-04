@@ -2,7 +2,7 @@
 
 ## 📋 部署环境
 
-- 服务器：collegetopics.cn
+- 服务器：119.29.152.18
 - 操作系统：Ubuntu
 - 容器技术：Docker + Docker Compose
 - 数据库：MySQL 8.0
@@ -41,7 +41,7 @@ docker ps -a
 cp entrepreneurship_system.sql deploy/init.sql
 
 # 2. 上传部署文件到服务器
-scp -r deploy/* ubuntu@collegetopics.cn:~/xm_entrepreneurship_system/
+scp -r deploy/* ubuntu@119.29.152.18:~/xm_entrepreneurship_system/
 ```
 
 或者使用SFTP工具（推荐）上传以下文件：
@@ -101,7 +101,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: root123456  # 改为服务器MySQL密码
-    url: jdbc:mysql://collegetopics.cn:3306/entrepreneurship_system?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2b8&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://119.29.152.18:3306/entrepreneurship_system?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2b8&allowPublicKeyRetrieval=true
 
 mybatis:
   configuration:
@@ -109,7 +109,7 @@ mybatis:
     map-underscore-to-camel-case: true
   mapper-locations: classpath:mapper/*.xml
 
-fileBaseUrl: https://collegetopics.cn:9090
+fileBaseUrl: http://119.29.152.18:9090
 ```
 
 #### 5.2 修改前端配置
@@ -117,7 +117,7 @@ fileBaseUrl: https://collegetopics.cn:9090
 创建 `vue/.env.production`：
 
 ```env
-VITE_BASE_URL=https://collegetopics.cn:9090
+VITE_BASE_URL=http://119.29.152.18:9090
 ```
 
 创建 `vue/.env.development`：
@@ -182,7 +182,7 @@ CMD ["nginx", "-g", "daemon off;"]
 ```nginx
 server {
     listen 80;
-    server_name collegetopics.cn;
+    server_name 119.29.152.18;
     
     location / {
         root /usr/share/nginx/html;
@@ -212,8 +212,8 @@ cd ../vue
 npm run build
 
 # 上传到服务器
-scp -r springboot ubuntu@collegetopics.cn:~/xm_entrepreneurship_system/
-scp -r vue ubuntu@collegetopics.cn:~/xm_entrepreneurship_system/
+scp -r springboot ubuntu@119.29.152.18:~/xm_entrepreneurship_system/
+scp -r vue ubuntu@119.29.152.18:~/xm_entrepreneurship_system/
 ```
 
 #### 7.4 启动完整应用
@@ -243,7 +243,7 @@ sudo apt update
 sudo apt install certbot python3-certbot-nginx
 
 # 获取SSL证书
-sudo certbot --nginx -d collegetopics.cn
+sudo certbot --nginx -d 119.29.152.18
 ```
 
 ## 🔍 故障排查

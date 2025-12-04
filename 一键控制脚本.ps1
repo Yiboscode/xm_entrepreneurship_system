@@ -7,7 +7,7 @@ param(
     [string]$Action = "status"
 )
 
-$server = "ubuntu@collegetopics.cn"
+$server = "ubuntu@119.29.152.18"
 $projectPath = "~/xm_entrepreneurship_system"
 
 Write-Host "================================" -ForegroundColor Cyan

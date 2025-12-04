@@ -2,7 +2,7 @@
 =======================================
 
 服务器信息：
-- 主机：collegetopics.cn
+- 主机：119.29.152.18
 - 用户：ubuntu
 - 目录：~/xm_entrepreneurship_system
 
@@ -16,11 +16,11 @@
 
 1. 连接服务器
    方式1：使用终端
-   ssh ubuntu@collegetopics.cn
+   ssh ubuntu@119.29.152.18
    
    方式2：使用SFTP工具（推荐）
    - 使用FileZilla、WinSCP等工具
-   - 主机：collegetopics.cn
+   - 主机：119.29.152.18
    - 用户：ubuntu
    - 密码：5201314_Zq
 
@@ -87,9 +87,9 @@
    spring:
      datasource:
        password: root123456
-       url: jdbc:mysql://collegetopics.cn:3306/entrepreneurship_system?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2b8&allowPublicKeyRetrieval=true
+       url: jdbc:mysql://119.29.152.18:3306/entrepreneurship_system?useUnicode=true&characterEncoding=utf-8&allowMultiQueries=true&useSSL=false&serverTimezone=GMT%2b8&allowPublicKeyRetrieval=true
    
-   fileBaseUrl: https://collegetopics.cn:9090
+   fileBaseUrl: http://119.29.152.18:9090
 
 7. 创建前端环境配置
    复制文件：
@@ -101,7 +101,7 @@
    VITE_BASE_URL=http://localhost:9090
    
    # .env.production
-   VITE_BASE_URL=https://collegetopics.cn:9090
+   VITE_BASE_URL=http://119.29.152.18:9090
 
 8. 本地测试（在本地执行）
    
@@ -162,8 +162,8 @@
     docker-compose logs -f
 
 13. 访问测试
-    前端：http://collegetopics.cn:8080
-    后端：http://collegetopics.cn:9090
+    前端：http://119.29.152.18:8080
+    后端：http://119.29.152.18:9090
 
 =======================================
 常用命令

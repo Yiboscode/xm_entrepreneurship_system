@@ -34,7 +34,7 @@ git push -u origin main
 ### 1. 连接到服务器
 
 ```bash
-ssh ubuntu@collegetopics.cn
+ssh ubuntu@119.29.152.18
 ```
 
 ### 2. 克隆仓库到服务器
@@ -58,9 +58,9 @@ ls -la
 
 ```bash
 # 在本地执行，上传必要文件
-scp entrepreneurship_system.sql ubuntu@collegetopics.cn:~/xm_entrepreneurship_system/init.sql
-scp deploy/setup-webhook.sh ubuntu@collegetopics.cn:~/xm_entrepreneurship_system/deploy/
-scp deploy/webhook-server.js ubuntu@collegetopics.cn:~/xm_entrepreneurship_system/deploy/
+scp entrepreneurship_system.sql ubuntu@119.29.152.18:~/xm_entrepreneurship_system/init.sql
+scp deploy/setup-webhook.sh ubuntu@119.29.152.18:~/xm_entrepreneurship_system/deploy/
+scp deploy/webhook-server.js ubuntu@119.29.152.18:~/xm_entrepreneurship_system/deploy/
 ```
 
 ### 4. 配置Webhook服务器
@@ -112,7 +112,7 @@ curl http://localhost:9999/webhook
 ### 3. 配置Webhook
 
 ```
-Payload URL: http://collegetopics.cn:9999/webhook
+Payload URL: http://119.29.152.18:9999/webhook
 Content type: application/json
 Secret: your_webhook_secret_123456
 ```
@@ -157,7 +157,7 @@ cd ~/xm_entrepreneurship_system
 
 ```
 Name: 远程调试-创业系统
-Host: collegetopics.cn
+Host: 119.29.152.18
 Port: 5005
 Command line arguments: 
   -agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005
@@ -251,7 +251,7 @@ SERVER_PORT=9090
 DEBUG_PORT=5005
 
 # 文件上传
-FILE_BASE_URL=https://collegetopics.cn:9090
+FILE_BASE_URL=http://119.29.152.18:9090
 EOF
 ```
 
@@ -291,7 +291,7 @@ pm2 logs webhook --lines 0
 
 ### 3. 验证部署
 
-访问：http://collegetopics.cn
+访问：http://119.29.152.18
 
 检查修改是否生效。
 
